@@ -5,7 +5,7 @@
 1. **Clone the repository (or download and unzip):**
     ```
     git clone https://github.com/Eswar-13/cs315.git
-    cd travel
+    cd <path_of_folder>
     ```
 
 2. **Install Django:**
