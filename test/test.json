@@ -1,0 +1,55 @@
+[
+    {
+      "model": "search.station",
+      "pk": "NDLS",
+      "fields": {
+        "state": "Delhi",
+        "latitude": 28.642389,
+        "longitude": 77.221144
+      }
+    },
+    {
+      "model": "search.station",
+      "pk": "BCT",
+      "fields": {
+        "state": "Maharashtra",
+        "latitude": 18.947115,
+        "longitude": 72.832466
+      }
+    },
+    {
+      "model": "search.train",
+      "pk": 1,
+      "fields": {
+        "number": "12951",
+        "origin_date": "2025-04-25",
+        "end_date": "2025-04-26",
+        "seats_available": 150
+      }
+    },
+    {
+      "model": "search.schedule",
+      "pk": 1,
+      "fields": {
+        "train": 1,
+        "station": "NDLS",
+        "arrival_time": null,
+        "departure_time": "08:00:00",
+        "distance_from_src": 0,
+        "stop_order": 1
+      }
+    },
+    {
+      "model": "search.schedule",
+      "pk": 2,
+      "fields": {
+        "train": 1,
+        "station": "BCT",
+        "arrival_time": "20:00:00",
+        "departure_time": "20:30:00",
+        "distance_from_src": 1384,
+        "stop_order": 2
+      }
+    }
+    ]
+    

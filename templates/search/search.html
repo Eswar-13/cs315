@@ -1,0 +1,69 @@
+<!-- templates/search/search.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Train Search</title>
+</head>
+<body>
+    <h1>Find Trains</h1>
+    <form method="GET">
+        <label>From:
+            <select name="source" required>
+                {% for station in stations %}
+                <option value="{{ station.name }}" 
+                    {% if station.name == source %}selected{% endif %}>
+                    {{ station.name }} ({{ station.state }})
+                </option>
+                {% endfor %}
+            </select>
+        </label>
+        
+        <label>To:
+            <select name="dest" required>
+                {% for station in stations %}
+                <option value="{{ station.name }}" 
+                    {% if station.name == dest %}selected{% endif %}>
+                    {{ station.name }} ({{ station.state }})
+                </option>
+                {% endfor %}
+            </select>
+        </label>
+        
+        <label>Date:
+            <input type="date" name="date" value="{{ date }}" required>
+        </label>
+        
+        <button type="submit">Search</button>
+    </form>
+
+    {% if results %}
+    <h2>Available Trains ({{ results|length }})</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Train No</th>
+                <th>Departure</th>
+                <th>Arrival</th>
+                <th>Duration</th>
+                <th>Seats</th>
+                <th>Distance</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for train in results %}
+            <tr>
+                <td>{{ train.train_number }}</td>
+                <td>{{ train.departure_time }}</td>
+                <td>{{ train.arrival_time }}</td>
+                <td>{{ train.duration }}</td>
+                <td>{{ train.seats_available }}</td>
+                <td>{{ train.distance }} km</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% elif request.GET %}
+    <p>No trains found for this route</p>
+    {% endif %}
+</body>
+</html>
