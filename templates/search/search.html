@@ -58,6 +58,11 @@
                 <td>{{ train.duration }}</td>
                 <td>{{ train.seats_available }}</td>
                 <td>{{ train.distance }} km</td>
+                <td>
+                    <a href="{% url 'booking:start' %}?train_no={{ train.train_number }}&source={{ source }}&dest={{ dest }}&date={{ date }}&seats_available={{ train.seats_available }}">
+                        Book
+                    </a>
+                </td>
             </tr>
             {% endfor %}
         </tbody>

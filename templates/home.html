@@ -2,9 +2,18 @@
 {% block content %}
 <h2>Welcome, {{ user.username }}!</h2>
 
-<a href="{% url 'search:route_search' %}" class="btn">
-    Search Trains
-</a>
+<div class="nav-links">
+    <a href="{% url 'search:route_search' %}" class="btn">
+        Search Trains
+    </a>
+    
+    <a href="{% url 'booking:history' %}" class="btn">
+        Booking History
+    </a>
 
-<form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit">Logout</button></form>
+    <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn">Logout</button>
+    </form>
+</div>
 {% endblock %}

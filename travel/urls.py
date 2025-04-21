@@ -22,6 +22,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include('users.urls')),
     path('search/', include('search.urls')),
+    path('booking/', include('booking.urls')),
     path('', RedirectView.as_view(url='/auth/login/', permanent=False)),
 
 ]

@@ -1,0 +1,14 @@
+<h2>Book Train</h2>
+<form method="post">
+    {% csrf_token %}
+    <p>Train: {{ train_no }}</p>
+    <p>From: {{ source }}</p>
+    <p>To: {{ dest }}</p>
+    <p>Date: {{ date }}</p>
+    <p>Seats Available: {{ seats_available }}</p>
+    <label>
+        Number of Passengers (1-{{ max_passengers }}):
+        <input type="number" name="no_of_passengers" min="1" max="{{ max_passengers }}" value="1" required>
+    </label>
+    <button type="submit">Next</button>
+</form>

@@ -1,0 +1,19 @@
+<h2>Enter Passenger Details</h2>
+<form method="post">
+    {% csrf_token %}
+    {% for i in passenger_range %}
+        <fieldset>
+            <legend>Passenger {{ i }}</legend>
+            <label>Name: <input type="text" name="name_{{ i }}" required></label>
+            <label>Age: <input type="number" name="age_{{ i }}" min="0" max="120" required></label>
+            <label>Gender:
+                <select name="gender_{{ i }}">
+                    <option value="M">Male</option>
+                    <option value="F">Female</option>
+                    <option value="O">Other</option>
+                </select>
+            </label>
+        </fieldset>
+    {% endfor %}
+    <button type="submit">Book</button>
+</form>
