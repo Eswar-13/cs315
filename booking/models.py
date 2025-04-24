@@ -12,7 +12,7 @@ class Booking(models.Model):
     passengers = models.ManyToManyField('Passenger', through='Seating')
 
     class Meta:
-        unique_together = ('train', 'user', 'source', 'destination')
+        pass
 
     def __str__(self):
         return f"{self.train.number} - {self.source} to {self.destination}"

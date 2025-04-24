@@ -9,7 +9,7 @@
     <li class="booking-item">
         <div class="booking-header">
             <span class="train-no">{{ booking.train.number }}</span>
-            <span class="date">{{ booking.train.origin_date }}</span>
+            <span class="date">{{ booking.train.origin_date|date:"D, M j, Y" }}</span>
         </div>
         <div class="route">
             {{ booking.source.name }} → {{ booking.destination.name }}
@@ -17,6 +17,37 @@
         <div class="details">
             Passengers: {{ booking.no_of_passengers }}
             <span class="booking-id">Booking ID: {{ booking.booking_id }}</span>
+        </div>
+        
+        <!-- Passenger and Seat Details -->
+        <div class="passenger-details">
+            <h4>Passenger List:</h4>
+            <table class="passenger-table">
+                <thead>
+                    <tr>
+                        <th>Seat No</th>
+                        <th>Name</th>
+                        <th>Age</th>
+                        <th>Gender</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for seating in booking.seating_set.all %}
+                    <tr>
+                        <td>{{ seating.seat_no }}</td>
+                        <td>{{ seating.passenger.name }}</td>
+                        <td>{{ seating.passenger.age }}</td>
+                        <td>
+                            {% if seating.passenger.get_gender_display %}
+                                {{ seating.passenger.get_gender_display }}
+                            {% else %}
+                                {{ seating.passenger.gender }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </li>
     {% endfor %}
@@ -26,4 +57,44 @@
 {% endif %}
 
 <a href="{% url 'home' %}" class="btn">Back to Home</a>
+
+<style>
+    .booking-list {
+        list-style: none;
+        padding: 0;
+    }
+    .booking-item {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .booking-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+    .route {
+        font-size: 1.2em;
+        color: #0d6efd;
+        margin-bottom: 15px;
+    }
+    .passenger-details {
+        margin-top: 15px;
+    }
+    .passenger-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+    .passenger-table th, .passenger-table td {
+        padding: 8px;
+        border: 1px solid #dee2e6;
+        text-align: left;
+    }
+    .passenger-table th {
+        background-color: #e9ecef;
+    }
+</style>
 {% endblock %}

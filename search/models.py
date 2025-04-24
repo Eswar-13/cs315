@@ -24,7 +24,7 @@ class Schedule(models.Model):
     train = models.ForeignKey(Train, on_delete=models.CASCADE, related_name='schedules')
     station = models.ForeignKey(Station, on_delete=models.CASCADE)
     arrival_time = models.TimeField(null=True, blank=True)
-    departure_time = models.TimeField()
+    departure_time = models.TimeField(null=True, blank=True)
     distance_from_src = models.DecimalField(max_digits=8, decimal_places=2)
     stop_order = models.PositiveIntegerField()
 
