@@ -2,6 +2,24 @@ from django.shortcuts import render
 from django.db import connection
 from .models import Station
 from .services.path_finder import RouteService
+from django.core.cache import cache
+
+def generate_cache_key(source, dest, date_str, connected_allowed):
+    return f"route_search:{source}:{dest}:{date_str}:{connected_allowed}"
+
+
+def get_cached_route_data(source, dest, date_str, connected_allowed, timeout=3600):
+
+    key = generate_cache_key(source, dest, date_str, connected_allowed)
+    cached_data = cache.get(key)
+    if cached_data is not None:
+        return cached_data
+    # Compute the data
+    service = RouteService()
+    data = service.find_routes(source, dest, date_str, connected_allowed)
+    cache.set(key, data, timeout)
+    return data
+
 
 def route_search(request):
     results = []
@@ -16,8 +34,7 @@ def route_search(request):
         allow_connect = request.GET.get('allow_connect') == '1'
 
         if source and dest and travel_date:
-            service = RouteService()
-            route_data = service.find_routes(source, dest, travel_date, allow_connect)
+            route_data = get_cached_route_data(source, dest, travel_date, allow_connect)
             results = route_data['results']
             connecting_results = route_data['connecting_results']
 
