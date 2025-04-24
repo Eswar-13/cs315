@@ -1,3 +1,50 @@
-<h2>Booking Successful!</h2>
-<p>Your booking has been completed.</p>
-<a href="{% url 'home' %}">Back to Search</a>
+{% extends "base.html" %}
+{% block title %}Booking Confirmed{% endblock %}
+{% block content %}
+
+<style>
+  .confirmation-box {
+    max-width: 500px;
+    margin: 4rem auto;
+    background-color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+
+  .confirmation-box h2 {
+    color: #2875a8;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .confirmation-box p {
+    color: #2875a8;
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+  }
+
+  .confirmation-box a {
+    display: inline-block;
+    text-decoration: none;
+    background-color: #3498db;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+  }
+
+  .confirmation-box a:hover {
+    background-color: #2980b9;
+  }
+</style>
+
+<div class="confirmation-box">
+  <h2>Booking Successful!</h2>
+  <p>Your booking has been completed.</p>
+  <a href="{% url 'home' %}">Back to Search</a>
+</div>
+
+{% endblock %}

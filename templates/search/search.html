@@ -1,194 +1,252 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Train Search</title>
-    <style>
-        table { border-collapse: collapse; width: 100%; }
-        th, td { border: 1px solid #ccc; padding: 8px; }
-        th { background: #f0f0f0; }
-    </style>
-</head>
-<body>
-    <h1>Find Trains</h1>
-    <form method="GET">
-        <label>From:
-            <select name="source" required>
-                {% for station in stations %}
-                <option value="{{ station.name }}" 
-                    {% if station.name == source %}selected{% endif %}>
-                    {{ station.name }} ({{ station.state }})
-                </option>
-                {% endfor %}
-            </select>
-        </label>
-        
-        <label>To:
-            <select name="dest" required>
-                {% for station in stations %}
-                <option value="{{ station.name }}" 
-                    {% if station.name == dest %}selected{% endif %}>
-                    {{ station.name }} ({{ station.state }})
-                </option>
-                {% endfor %}
-            </select>
-        </label>
-        
-        <label>Date:
-            <input type="date" name="date" value="{{ date }}" required>
-        </label>
-        
-        <label>
-            <input type="checkbox" name="allow_connect" value="1" {% if allow_connect %}checked{% endif %}>
-            Allow connecting trains (1 stop)
-        </label>
-        
-        <button type="submit">Search</button>
-    </form>
+{% extends "base.html" %}
+{% block title %}Train Search{% endblock %}
+{% block content %}
 
-    {% if allow_connect %}
-        <h2>Direct Trains</h2>
-        {% if results %}
-            <table>
-                <thead>
-                    <tr>
-                        <th>Train No</th>
-                        <th>Departure</th>
-                        <th>Arrival</th>
-                        <th>Duration</th>
-                        <th>Seats</th>
-                        <th>Distance</th>
-                        <th>Book</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for train in results %}
-                    <tr>
-                        <td>{{ train.train_number }}</td>
-                        <td>{{ train.departure_time }}</td>
-                        <td>{{ train.arrival_time }}</td>
-                        <td>{{ train.duration }}</td>
-                        <td>{{ train.seats_available }}</td>
-                        <td>{{ train.distance }} km</td>
-                        <td>
-                            <a href="{% url 'booking:start' %}?train_no={{ train.train_number }}&source={{ source }}&dest={{ dest }}&date={{ date }}&seats_available={{ train.seats_available }}">
-                                Book
-                            </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% elif request.GET %}
-            <p>No direct trains available for this route</p>
-        {% endif %}
+<style>
+  h1 {
+    text-align: center;
+    color: #1c5377;
+    margin-top: 30px;
+  }
+  h2 {
+    text-align: center;
+    color: #1c5377;
+  }
 
-        <h2>Connecting Trains (1 stop)</h2>
-        {% if connecting_results %}
-            <table>
-                <thead>
-                    <tr>
-                        <th>Route</th>
-                        <th>Train No</th>
-                        <th>Departure</th>
-                        <th>Arrival</th>
-                        <th>Duration</th>
-                        <th>Seats</th>
-                        <th>Distance</th>
-                        <th>Book</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for conn in connecting_results %}
-                    <tr class="connection-header">
-                        <td colspan="8">
-                            Connection {{ forloop.counter }} via {{ conn.mid_station_name }} 
-                            (Total Duration: {{ conn.total_duration_hms }})
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>First Leg</td>
-                        <td>{{ conn.train1_number }}</td>
-                        <td>{{ conn.train1_departure }}</td>
-                        <td>{{ conn.train1_arrival }}</td>
-                        <td>{{ conn.train1_duration }}</td>
-                        <td>{{ conn.train1_seats }}</td>
-                        <td>{{ conn.train1_distance }} km</td>
-                        <td>
-                            <a href="{% url 'booking:start' %}?train_no={{ conn.train1_number }}&source={{ source }}&dest={{ conn.mid_station_id }}&date={{ date }}&seats_available={{ conn.train1_seats }}">
-                                Book
-                            </a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Second Leg</td>
-                        <td>{{ conn.train2_number }}</td>
-                        <td>{{ conn.train2_departure }}</td>
-                        <td>{{ conn.train2_arrival }}</td>
-                        <td>{{ conn.train2_duration }}</td>
-                        <td>{{ conn.train2_seats }}</td>
-                        <td>{{ conn.train2_distance }} km</td>
-                        <td>
-                            <a href="{% url 'booking:start' %}?train_no={{ conn.train2_number }}&source={{ conn.mid_station_id }}&dest={{ dest }}&date={{ date }}&seats_available={{ conn.train2_seats }}">
-                                Book
-                            </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+  form.search-form {
+    max-width: 900px;
+    margin: 2rem auto;
+    background-color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
 
-            <style>
-                .connection-header {
-                    background-color: #f8f9fa;
-                    font-weight: bold;
-                    border-top: 2px solid #dee2e6;
-                    border-bottom: 2px solid #dee2e6;
-                }
-                tr:nth-child(3n) {
-                    border-bottom: 2px solid #dee2e6;
-                }
-            </style>
-            {% elif request.GET %}
-            <p>No connecting trains available for this route</p>
-            {% endif %}
+  label {
+    display: block;
+    margin-bottom: 1rem;
+    font-weight: bold;
+    color: #256c9b;
+  }
 
-    {% else %}
-        {% if results %}
-            <h2>Available Trains ({{ results|length }})</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Train No</th>
-                        <th>Departure</th>
-                        <th>Arrival</th>
-                        <th>Duration</th>
-                        <th>Seats</th>
-                        <th>Distance</th>
-                        <th>Book</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for train in results %}
-                    <tr>
-                        <td>{{ train.train_number }}</td>
-                        <td>{{ train.departure_time }}</td>
-                        <td>{{ train.arrival_time }}</td>
-                        <td>{{ train.duration }}</td>
-                        <td>{{ train.seats_available }}</td>
-                        <td>{{ train.distance }} km</td>
-                        <td>
-                            <a href="{% url 'booking:start' %}?train_no={{ train.train_number }}&source={{ source }}&dest={{ dest }}&date={{ date }}&seats_available={{ train.seats_available }}">
-                                Book
-                            </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% elif request.GET %}
-            <p>No trains found for this route</p>
-        {% endif %}
-    {% endif %}
-</body>
-</html>
+  input[type="date"],
+  select {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    margin-top: 5px;
+  }
 
+  input[type="checkbox"] {
+    margin-right: 8px;
+  }
+
+  form.search-form button[type="submit"] {
+    background-color: #3498db;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  form.search-form button[type="submit"]:hover {
+    background-color: #2980b9;
+  }
+
+  table {
+    width: 90%;
+    margin: 2rem auto;
+    border-collapse: collapse;
+    background-color: white;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+    border: 2px solid #829aaa; 
+  }
+
+  th, td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    color: #1c5377;
+    text-align: center;
+  }
+
+  th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+    color: #256c9b;
+  }
+
+  a {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: bold;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  .connection-header {
+    background-color: #e9ecef;
+    font-weight: bold;
+    border-top: 2px solid #dee2e6;
+    border-bottom: 2px solid #dee2e6;
+  }
+</style>
+
+<h1>Find Trains</h1>
+
+<form method="GET" class="search-form">
+  <label>From:
+    <select name="source" required>
+      {% for station in stations %}
+      <option value="{{ station.name }}" {% if station.name == source %}selected{% endif %}>
+        {{ station.name }} ({{ station.state }})
+      </option>
+      {% endfor %}
+    </select>
+  </label>
+
+  <label>To:
+    <select name="dest" required>
+      {% for station in stations %}
+      <option value="{{ station.name }}" {% if station.name == dest %}selected{% endif %}>
+        {{ station.name }} ({{ station.state }})
+      </option>
+      {% endfor %}
+    </select>
+  </label>
+
+  <label>Date:
+    <input type="date" name="date" value="{{ date }}" required>
+  </label>
+
+  <label>
+    <input type="checkbox" name="allow_connect" value="1" {% if allow_connect %}checked{% endif %}>
+    Allow connecting trains (1 stop)
+  </label>
+
+  <button type="submit">Search</button>
+</form>
+
+{% if allow_connect %}
+  <h2 style="text-align:center;">Direct Trains</h2>
+  {% if results %}
+    <table>
+      <thead>
+        <tr>
+          <th>Train No</th><th>Departure</th><th>Arrival</th><th>Duration</th>
+          <th>Seats</th><th>Distance</th><th>Book</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for train in results %}
+        <tr>
+          <td>{{ train.train_number }}</td>
+          <td>{{ train.departure_time }}</td>
+          <td>{{ train.arrival_time }}</td>
+          <td>{{ train.duration }}</td>
+          <td>{{ train.seats_available }}</td>
+          <td>{{ train.distance }} km</td>
+          <td>
+            <a href="{% url 'booking:start' %}?train_no={{ train.train_number }}&source={{ source }}&dest={{ dest }}&date={{ date }}&seats_available={{ train.seats_available }}">
+              Book
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% elif request.GET %}
+    <p style="text-align:center;">No direct trains available for this route</p>
+  {% endif %}
+
+  <h2 style="text-align:center;">Connecting Trains (1 stop)</h2>
+  {% if connecting_results %}
+    <table>
+      <thead>
+        <tr>
+          <th>Route</th><th>Train No</th><th>Departure</th><th>Arrival</th>
+          <th>Duration</th><th>Seats</th><th>Distance</th><th>Book</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for conn in connecting_results %}
+        <tr class="connection-header">
+          <td colspan="8">
+            Connection {{ forloop.counter }} via {{ conn.mid_station_name }} 
+            (Total Duration: {{ conn.total_duration_hms }})
+          </td>
+        </tr>
+        <tr>
+          <td>First Leg</td>
+          <td>{{ conn.train1_number }}</td>
+          <td>{{ conn.train1_departure }}</td>
+          <td>{{ conn.train1_arrival }}</td>
+          <td>{{ conn.train1_duration }}</td>
+          <td>{{ conn.train1_seats }}</td>
+          <td>{{ conn.train1_distance }} km</td>
+          <td>
+            <a href="{% url 'booking:start' %}?train_no={{ conn.train1_number }}&source={{ source }}&dest={{ conn.mid_station_id }}&date={{ date }}&seats_available={{ conn.train1_seats }}">
+              Book
+            </a>
+          </td>
+        </tr>
+        <tr>
+          <td>Second Leg</td>
+          <td>{{ conn.train2_number }}</td>
+          <td>{{ conn.train2_departure }}</td>
+          <td>{{ conn.train2_arrival }}</td>
+          <td>{{ conn.train2_duration }}</td>
+          <td>{{ conn.train2_seats }}</td>
+          <td>{{ conn.train2_distance }} km</td>
+          <td>
+            <a href="{% url 'booking:start' %}?train_no={{ conn.train2_number }}&source={{ conn.mid_station_id }}&dest={{ dest }}&date={{ date }}&seats_available={{ conn.train2_seats }}">
+              Book
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% elif request.GET %}
+    <p style="text-align:center;">No connecting trains available for this route</p>
+  {% endif %}
+{% else %}
+  {% if results %}
+    <h2 style="text-align:center;">Available Trains ({{ results|length }})</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Train No</th><th>Departure</th><th>Arrival</th><th>Duration</th>
+          <th>Seats</th><th>Distance</th><th>Book</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for train in results %}
+        <tr>
+          <td>{{ train.train_number }}</td>
+          <td>{{ train.departure_time }}</td>
+          <td>{{ train.arrival_time }}</td>
+          <td>{{ train.duration }}</td>
+          <td>{{ train.seats_available }}</td>
+          <td>{{ train.distance }} km</td>
+          <td>
+            <a href="{% url 'booking:start' %}?train_no={{ train.train_number }}&source={{ source }}&dest={{ dest }}&date={{ date }}&seats_available={{ train.seats_available }}">
+              Book
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% elif request.GET %}
+    <p style="text-align:center;">No trains found for this route</p>
+  {% endif %}
+{% endif %}
+
+{% endblock %}

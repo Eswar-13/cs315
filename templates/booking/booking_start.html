@@ -1,14 +1,103 @@
+{% extends "base.html" %}
+{% block title %}Book Train{% endblock %}
+{% block content %}
+
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f2f5;
+    margin: 0;
+    padding: 0;
+  }
+
+  h2 {
+    text-align: center;
+    margin-top: 40px;
+    color: #2c3e50;
+    font-size: 2rem;
+    font-weight: bold;
+  }
+
+  form {
+    max-width: 600px;
+    margin: 2rem auto;
+    background-color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  p {
+    font-size: 1.1rem;
+    color: #34495e;
+    margin-bottom: 1rem;
+  }
+
+  label {
+    display: block;
+    margin: 1rem 0;
+    font-weight: bold;
+    color: #2c3e50;
+  }
+
+  input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    margin-top: 8px;
+  }
+
+  .book-next-btn {
+    background-color: #3498db;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 1.5rem;
+    transition: background-color 0.3s ease;
+  }
+
+  .book-next-btn:hover {
+    background-color: #2980b9;
+  }
+  .header form {
+    background: none !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .logout-btn {
+    background-color: #2875a8 !important;
+    color: white !important;
+    padding: 8px 14px !important;
+    border: none !important;
+    border-radius: 3px !important;
+    box-shadow: none !important;
+  }
+  .logout-btn:hover {
+            background-color: #2e6183 !important;
+        }
+</style>
+
 <h2>Book Train</h2>
 <form method="post">
     {% csrf_token %}
-    <p>Train: {{ train_no }}</p>
-    <p>From: {{ source }}</p>
-    <p>To: {{ dest }}</p>
-    <p>Date: {{ date }}</p>
-    <p>Seats Available: {{ seats_available }}</p>
+    <p><strong>Train:</strong> {{ train_no }}</p>
+    <p><strong>From:</strong> {{ source }}</p>
+    <p><strong>To:</strong> {{ dest }}</p>
+    <p><strong>Date:</strong> {{ date }}</p>
+    <p><strong>Seats Available:</strong> {{ seats_available }}</p>
+
     <label>
         Number of Passengers (1-{{ max_passengers }}):
         <input type="number" name="no_of_passengers" min="1" max="{{ max_passengers }}" value="1" required>
     </label>
-    <button type="submit">Next</button>
+
+    <button type="submit" class="book-next-btn">Next</button>
 </form>
+
+{% endblock %}

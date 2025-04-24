@@ -1,19 +1,132 @@
+{% extends "base.html" %}
+{% block title %}Passenger Details{% endblock %}
+{% block content %}
+
+<style>
+  h2 {
+    text-align: center;
+    margin-top: 40px;
+    color: #2c3e50;
+    font-size: 2rem;
+  }
+
+  form {
+    max-width: 900px;
+    margin: 2rem auto;
+    background-color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  fieldset {
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  legend {
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: #2c3e50;
+    padding: 0 10px;
+  }
+
+  .row {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 2rem; /* adds more space between input boxes */
+  row-gap: 1rem;
+}
+
+
+  .form-group {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 0.4rem;
+    color: #34495e;
+  }
+
+  .form-group input,
+  .form-group select {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+  }
+
+  button[type="submit"] {
+    display: block;
+    width: 100%;
+    background-color: #3498db;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 1.5rem;
+    transition: background-color 0.3s ease;
+  }
+
+  button[type="submit"]:hover {
+    background-color: #2980b9;
+  }
+  .header form {
+    background: none !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .logout-btn {
+    background-color: #2875a8 !important;
+    color: white !important;
+    padding: 8px 14px !important;
+    border: none !important;
+    border-radius: 3px !important;
+    margin-top: 0 !important;
+    box-shadow: none !important;
+  }
+  .logout-btn:hover {
+            background-color: #2e6183 !important;
+        }
+</style>
+
 <h2>Enter Passenger Details</h2>
+
 <form method="post">
-    {% csrf_token %}
-    {% for i in passenger_range %}
-        <fieldset>
-            <legend>Passenger {{ i }}</legend>
-            <label>Name: <input type="text" name="name_{{ i }}" required></label>
-            <label>Age: <input type="number" name="age_{{ i }}" min="0" max="120" required></label>
-            <label>Gender:
-                <select name="gender_{{ i }}">
-                    <option value="M">Male</option>
-                    <option value="F">Female</option>
-                    <option value="O">Other</option>
-                </select>
-            </label>
-        </fieldset>
-    {% endfor %}
-    <button type="submit">Book</button>
+  {% csrf_token %}
+  {% for i in passenger_range %}
+    <fieldset>
+      <legend>Passenger {{ i }}</legend>
+      <div class="row">
+        <div class="form-group">
+          <label for="name_{{ i }}">Name:</label>
+          <input type="text" name="name_{{ i }}" id="name_{{ i }}" required>
+        </div>
+        <div class="form-group">
+          <label for="age_{{ i }}">Age:</label>
+          <input type="number" name="age_{{ i }}" id="age_{{ i }}" min="0" max="120" required>
+        </div>
+        <div class="form-group">
+          <label for="gender_{{ i }}">Gender:</label>
+          <select name="gender_{{ i }}" id="gender_{{ i }}">
+            <option value="M">Male</option>
+            <option value="F">Female</option>
+            <option value="O">Other</option>
+          </select>
+        </div>
+      </div>
+    </fieldset>
+  {% endfor %}
+  <button type="submit">Book</button>
 </form>
+
+{% endblock %}
