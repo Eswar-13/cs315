@@ -20,6 +20,14 @@ class RouteService:
             self._load_graph()
             self.initialized = True
 
+    def get_latest_seats(self, train_number, origin_date):
+        Train = apps.get_model('search', 'Train')
+        try:
+            train = Train.objects.get(number=train_number, origin_date=origin_date)
+            return train.seats_available
+        except Train.DoesNotExist:
+            return None
+    
     def _load_graph(self):
         """Build complete graph structure from Schedule model"""
         Schedule = apps.get_model('search', 'Schedule')
@@ -121,7 +129,7 @@ class RouteService:
         first = path[0]
         last = path[-1]
         duration = (last['arrival'] - first['departure']).total_seconds()
-        
+        latest_seats = self.get_latest_seats(first['train'].number, first['train'].origin_date)
         return {
             'train_number': first['train'].number,
             'origin_date': first['train'].origin_date,
@@ -209,8 +217,8 @@ class RouteService:
         # Find valid mid stations
         # print(forward,backward)
         connecting_results = []
-        print(forward.keys())
-        print(backward.keys())
+        # print(forward.keys())
+        # print(backward.keys())
         for mid in set(forward.keys()) & set(backward.keys()):
             # print(mid)
             fwd = forward[mid]
@@ -234,33 +242,34 @@ class RouteService:
 
             # Format to match SQL output
             connection = self._format_connection(first_leg, second_leg, mid)
-            print(connection)
-            print(' ')
+            # print(connection)
+            # print(' ')
             connecting_results.append(connection)
 
         return connecting_results
 
     def _format_connection(self, first_leg, second_leg, mid_station):
-        """Format connecting route to match SQL structure"""
         train1 = first_leg[-1]['train']
         train2 = second_leg[0]['train']
-        
-        # Calculate durations
+        train1_date = first_leg[0]['departure'].date()
+        train2_date = second_leg[0]['departure'].date()
+        latest_seats1 = self.get_latest_seats(train1.number, train1_date)
+        latest_seats2 = self.get_latest_seats(train2.number, train2_date)
+
         train1_duration = (first_leg[-1]['arrival'] - first_leg[0]['departure']).total_seconds()
         train2_duration = (second_leg[-1]['arrival'] - second_leg[0]['departure']).total_seconds()
         transfer_duration = (second_leg[0]['departure'] - first_leg[-1]['arrival']).total_seconds()
-        
         return {
             'train1_number': train1.number,
             'train1_date': first_leg[0]['departure'].date(),
             'train1_departure': first_leg[0]['departure'].time(),
             'train1_arrival': first_leg[-1]['arrival'].time(),
-            'train1_seats': train1.seats_available,
+            'train1_seats': latest_seats1,
             'train2_number': train2.number,
             'train2_date': second_leg[0]['departure'].date(),
             'train2_departure': second_leg[0]['departure'].time(),
             'train2_arrival': second_leg[-1]['arrival'].time(),
-            'train2_seats': train2.seats_available,
+            'train2_seats': latest_seats2,
             'mid_station_id': mid_station,
             'train1_distance': sum(e['distance'] for e in first_leg),
             'train2_distance': sum(e['distance'] for e in second_leg),
