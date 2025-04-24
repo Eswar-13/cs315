@@ -10,6 +10,8 @@ class Booking(models.Model):
     destination = models.ForeignKey('search.Station', on_delete=models.CASCADE, related_name='arrivals')
     no_of_passengers = models.PositiveIntegerField()
     passengers = models.ManyToManyField('Passenger', through='Seating')
+    status = models.CharField(max_length=10,default='Pending')
+
 
     class Meta:
         pass

@@ -57,28 +57,27 @@ def booking_passengers(request):
         train = booking.train
         no_of_passengers = booking.no_of_passengers
 
-        # Check seat availability again
         if train.seats_available < no_of_passengers:
             messages.error(request, "Not enough seats available")
             return redirect('booking:start')
 
         starting_seat = train.seats_available - no_of_passengers + 1
 
-        # Update train seats
         train.seats_available -= no_of_passengers
         train.save()
 
-        # Create passengers and seating
         for i in range(no_of_passengers):
             name = request.POST.get(f'name_{i+1}')
             age = int(request.POST.get(f'age_{i+1}'))
             gender = request.POST.get(f'gender_{i+1}')
 
-            passenger = Passenger.objects.create(
+            # Get or create passenger
+            passenger = Passenger.objects.get_or_create(
                 user=request.user,
                 name=name,
                 age=age,
-                gender=gender
+                gender=gender,
+                defaults={'user': request.user}  # Only needed if creating new
             )
 
             Seating.objects.create(
@@ -86,7 +85,8 @@ def booking_passengers(request):
                 passenger=passenger,
                 seat_no=starting_seat + i
             )
-
+        booking.status = 'completed'
+        booking.save()
         messages.success(request, "Booking successful!")
         return redirect('booking:confirm')
 
@@ -109,7 +109,7 @@ def booking_confirm(request):
 
 @login_required
 def booking_history(request):
-    bookings = Booking.objects.filter(user=request.user).select_related(
+    bookings = Booking.objects.filter(user=request.user, status='completed').select_related(
         'train', 'source', 'destination'
     ).order_by('-train__origin_date')
     return render(request, 'booking/history.html', {'bookings': bookings})
