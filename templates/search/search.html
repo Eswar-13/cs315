@@ -103,7 +103,7 @@
 <form method="GET" class="search-form">
   <label>From:
     <select name="source" required>
-      {% for station in stations %}
+      {% for station in stations|dictsort:"name" %}
       <option value="{{ station.name }}" {% if station.name == source %}selected{% endif %}>
         {{ station.name }} ({{ station.state }})
       </option>
@@ -113,7 +113,7 @@
 
   <label>To:
     <select name="dest" required>
-      {% for station in stations %}
+      {% for station in stations|dictsort:"name" %}
       <option value="{{ station.name }}" {% if station.name == dest %}selected{% endif %}>
         {{ station.name }} ({{ station.state }})
       </option>
