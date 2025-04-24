@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'users',  # Custom user apps
-    'search',
+    'search.apps.SearchConfig',
     'booking',
 ]
 

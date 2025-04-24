@@ -72,7 +72,7 @@ def booking_passengers(request):
             gender = request.POST.get(f'gender_{i+1}')
 
             # Get or create passenger
-            passenger = Passenger.objects.get_or_create(
+            passenger,created = Passenger.objects.get_or_create(
                 user=request.user,
                 name=name,
                 age=age,
