@@ -37,13 +37,37 @@
       }
   },
   {
+    "model": "search.schedule",
+    "pk": 1,
+    "fields": {
+      "train": 1,
+      "station": "NDLS",
+      "arrival_time": null,
+      "departure_time": "2025-04-25T08:00:00",
+      "distance_from_src": 0,
+      "stop_order": 1
+    }
+  },
+  {
+    "model": "search.schedule",
+    "pk": 2,
+    "fields": {
+      "train": 1,
+      "station": "BCT",
+      "arrival_time": "2025-04-25T20:00:00",
+      "departure_time": "2025-04-25T20:30:00",
+      "distance_from_src": 1384,
+      "stop_order": 2
+    }
+  },
+  {
       "model": "search.schedule",
       "pk": 3,
       "fields": {
           "train": 2,
           "station": "NDLS",
           "arrival_time": null,
-          "departure_time": "16:30:00",
+          "departure_time": "2025-04-25T16:30:00",
           "distance_from_src": 0,
           "stop_order": 1
       }
@@ -54,8 +78,8 @@
       "fields": {
           "train": 2,
           "station": "KOTA",
-          "arrival_time": "21:00:00",
-          "departure_time": "21:05:00",
+          "arrival_time": "2025-04-25T21:00:00",
+          "departure_time": "2025-04-25T21:05:00",
           "distance_from_src": 465,
           "stop_order": 2
       }
@@ -77,7 +101,7 @@
           "train": 3,
           "station": "KOTA",
           "arrival_time": null,
-          "departure_time": "22:00:00",
+          "departure_time": "2025-04-25T22:00:00",
           "distance_from_src": 0,
           "stop_order": 1
       }
@@ -88,7 +112,7 @@
       "fields": {
           "train": 3,
           "station": "BCT",
-          "arrival_time": "08:35:00",
+          "arrival_time": "2025-04-26T08:35:00",
           "departure_time": null,
           "distance_from_src": 919,
           "stop_order": 2
@@ -111,7 +135,7 @@
           "train": 4,
           "station": "NDLS",
           "arrival_time": null,
-          "departure_time": "18:45:00",
+          "departure_time": "2025-04-25T18:45:00",
           "distance_from_src": 0,
           "stop_order": 1
       }
@@ -122,8 +146,8 @@
       "fields": {
           "train": 4,
           "station": "BRC",
-          "arrival_time": "03:30:00",
-          "departure_time": "03:35:00",
+          "arrival_time": "2025-04-26T03:30:00",
+          "departure_time": "2025-04-26T03:35:00",
           "distance_from_src": 993,
           "stop_order": 2
       }
@@ -145,7 +169,7 @@
           "train": 5,
           "station": "BRC",
           "arrival_time": null,
-          "departure_time": "04:30:00",
+          "departure_time": "2025-04-26T04:30:00",
           "distance_from_src": 0,
           "stop_order": 1
       }
@@ -156,7 +180,7 @@
       "fields": {
           "train": 5,
           "station": "BCT",
-          "arrival_time": "09:15:00",
+          "arrival_time": "2025-04-26T09:15:00",
           "departure_time": null,
           "distance_from_src": 391,
           "stop_order": 2

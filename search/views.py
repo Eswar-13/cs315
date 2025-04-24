@@ -45,7 +45,7 @@ def route_search(request):
                 WHERE
                     src.station_id = %s AND
                     dest.station_id = %s AND
-                    t.origin_date = %s AND
+                    date(src.departure_time) = date(%s) AND
                     src.stop_order < dest.stop_order
                 ORDER BY src.departure_time
                 """
@@ -73,7 +73,10 @@ def route_search(request):
                         dest.arrival_time AS train2_arrival,
                         t2.seats_available AS train2_seats,
                         mid.station_id AS mid_station_id,
-                        (mid.distance_from_src - src1.distance_from_src) + (dest.distance_from_src - mid2.distance_from_src) AS total_distance,
+                        mid.distance_from_src - src1.distance_from_src AS train1_distance,
+                        dest.distance_from_src - mid2.distance_from_src AS train2_distance,
+                        CAST((julianday(mid.arrival_time) - julianday(src1.departure_time)) * 86400 AS INTEGER) AS train1_duration_seconds,
+                        CAST((julianday(dest.arrival_time) - julianday(mid2.departure_time)) * 86400 AS INTEGER) AS train2_duration_seconds,
                         CAST((julianday(mid.arrival_time) - julianday(src1.departure_time)) * 86400 AS INTEGER) +
                         CAST((julianday(dest.arrival_time) - julianday(mid2.departure_time)) * 86400 AS INTEGER) +
                         CAST((julianday(mid2.departure_time) - julianday(mid.arrival_time)) * 86400 AS INTEGER) AS total_duration
@@ -87,8 +90,7 @@ def route_search(request):
                     WHERE
                         src1.station_id = %s AND
                         dest.station_id = %s AND
-                        t1.origin_date = %s AND
-                        t2.origin_date = %s AND
+                        date(src1.departure_time) = date(%s) AND
                         src1.stop_order < mid.stop_order AND
                         mid2.stop_order < dest.stop_order AND
                         mid.station_id = mid2.station_id AND
@@ -99,15 +101,15 @@ def route_search(request):
                     LIMIT 20
                     """
                     # Parameters: source, dest, travel_date, travel_date, source, dest
-                    cursor.execute(connect_query, [source, dest, travel_date, travel_date, source, dest])
+                    cursor.execute(connect_query, [source, dest, travel_date, source, dest])
                     columns = [col[0] for col in cursor.description]
                     raw_results = cursor.fetchall()
                     for row in raw_results:
                         row_dict = dict(zip(columns, row))
                         row_dict['total_duration_hms'] = seconds_to_hms(row_dict['total_duration'])
                         row_dict['mid_station_name'] = Station.objects.get(name=row_dict['mid_station_id']).name
-                        # row_dict['train1_duration'] = seconds_to_hms(row_dict['train1_duration_seconds'])
-                        # row_dict['train2_duration'] = seconds_to_hms(row_dict['train2_duration_seconds'])
+                        row_dict['train1_duration'] = seconds_to_hms(row_dict['train1_duration_seconds'])
+                        row_dict['train2_duration'] = seconds_to_hms(row_dict['train2_duration_seconds'])
                         connecting_results.append(row_dict)
 
 
