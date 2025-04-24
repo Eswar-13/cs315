@@ -105,7 +105,11 @@ def route_search(request):
                     for row in raw_results:
                         row_dict = dict(zip(columns, row))
                         row_dict['total_duration_hms'] = seconds_to_hms(row_dict['total_duration'])
+                        row_dict['mid_station_name'] = Station.objects.get(name=row_dict['mid_station_id']).name
+                        # row_dict['train1_duration'] = seconds_to_hms(row_dict['train1_duration_seconds'])
+                        # row_dict['train2_duration'] = seconds_to_hms(row_dict['train2_duration_seconds'])
                         connecting_results.append(row_dict)
+
 
     stations = Station.objects.all()
     return render(request, 'search/search.html', {

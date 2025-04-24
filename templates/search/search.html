@@ -87,46 +87,70 @@
             <table>
                 <thead>
                     <tr>
-                        <th>First Train</th>
+                        <th>Route</th>
+                        <th>Train No</th>
                         <th>Departure</th>
-                        <th>Arrives At</th>
-                        <th>Change At</th>
-                        <th>Second Train</th>
-                        <th>Departs</th>
-                        <th>Arrives At</th>
-                        <th>Total Duration</th>
+                        <th>Arrival</th>
+                        <th>Duration</th>
+                        <th>Seats</th>
+                        <th>Distance</th>
                         <th>Book</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for conn in connecting_results %}
+                    <tr class="connection-header">
+                        <td colspan="8">
+                            Connection {{ forloop.counter }} via {{ conn.mid_station_name }} 
+                            (Total Duration: {{ conn.total_duration_hms }})
+                        </td>
+                    </tr>
                     <tr>
+                        <td>First Leg</td>
                         <td>{{ conn.train1_number }}</td>
                         <td>{{ conn.train1_departure }}</td>
                         <td>{{ conn.train1_arrival }}</td>
+                        <td>{{ conn.train1_duration }}</td>
+                        <td>{{ conn.train1_seats }}</td>
+                        <td>{{ conn.train1_distance }} km</td>
                         <td>
-                            {% for st in stations %}
-                                {% if st.id|stringformat:"s" == conn.mid_station_id|stringformat:"s" or st.name == conn.mid_station_id %}
-                                    {{ st.name }}
-                                {% endif %}
-                            {% endfor %}
+                            <a href="{% url 'booking:start' %}?train_no={{ conn.train1_number }}&source={{ source }}&dest={{ conn.mid_station_id }}&date={{ date }}&seats_available={{ conn.train1_seats }}">
+                                Book
+                            </a>
                         </td>
+                    </tr>
+                    <tr>
+                        <td>Second Leg</td>
                         <td>{{ conn.train2_number }}</td>
                         <td>{{ conn.train2_departure }}</td>
                         <td>{{ conn.train2_arrival }}</td>
-                        <td>{{ conn.total_duration_hms }}</td>
+                        <td>{{ conn.train2_duration }}</td>
+                        <td>{{ conn.train2_seats }}</td>
+                        <td>{{ conn.train2_distance }} km</td>
                         <td>
-                            <a href="{% url 'booking:start' %}?train_no={{ conn.train1_number }}&source={{ source }}&dest={{ conn.mid_station_id }}&date={{ date }}&seats_available={{ conn.train1_seats }}">Book 1</a>
-                            <br>
-                            <a href="{% url 'booking:start' %}?train_no={{ conn.train2_number }}&source={{ conn.mid_station_id }}&dest={{ dest }}&date={{ date }}&seats_available={{ conn.train2_seats }}">Book 2</a>
+                            <a href="{% url 'booking:start' %}?train_no={{ conn.train2_number }}&source={{ conn.mid_station_id }}&dest={{ dest }}&date={{ date }}&seats_available={{ conn.train2_seats }}">
+                                Book
+                            </a>
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
-        {% elif request.GET %}
+
+            <style>
+                .connection-header {
+                    background-color: #f8f9fa;
+                    font-weight: bold;
+                    border-top: 2px solid #dee2e6;
+                    border-bottom: 2px solid #dee2e6;
+                }
+                tr:nth-child(3n) {
+                    border-bottom: 2px solid #dee2e6;
+                }
+            </style>
+            {% elif request.GET %}
             <p>No connecting trains available for this route</p>
-        {% endif %}
+            {% endif %}
 
     {% else %}
         {% if results %}
@@ -167,3 +191,4 @@
     {% endif %}
 </body>
 </html>
+
